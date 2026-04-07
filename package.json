@@ -1,0 +1,33 @@
+{
+  "name": "sensei",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Self-updating personal knowledge base with MCP server",
+  "author": "Brian Gachichio Karanja <brian@gachichio.org>",
+  "license": "AGPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bgachichio/sensei.git"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:web\"",
+    "dev:server": "npm run dev -w packages/server",
+    "dev:web": "npm run dev -w packages/web",
+    "build": "npm run build -w packages/core && npm run build -w packages/connectors && npm run build -w packages/server && npm run build -w packages/web",
+    "build:server": "npm run build -w packages/core && npm run build -w packages/server",
+    "build:web": "npm run build -w packages/web",
+    "start": "npm run start -w packages/server",
+    "cli": "node packages/cli/src/index.js",
+    "test": "vitest",
+    "lint": "eslint packages/*/src/**/*.{ts,tsx}"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0",
+    "eslint": "^9.0.0"
+  }
+}

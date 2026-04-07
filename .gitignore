@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env
+*.db
+*.db-wal
+*.db-shm
+logs/
+.sensei/
+sensei-data/
+.DS_Store
+*.log

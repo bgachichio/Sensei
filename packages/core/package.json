@@ -1,0 +1,17 @@
+{
+  "name": "@sensei/core",
+  "version": "1.0.0",
+  "private": true,
+  "main": "src/index.js",
+  "type": "module",
+  "dependencies": {
+    "better-sqlite3": "^11.8.0",
+    "chokidar": "^4.0.0",
+    "front-matter": "^4.0.2",
+    "glob": "^11.0.0",
+    "gray-matter": "^4.0.3",
+    "nanoid": "^5.0.9",
+    "p-queue": "^8.0.1",
+    "yaml": "^2.7.0"
+  }
+}
