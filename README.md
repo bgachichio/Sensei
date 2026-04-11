@@ -2,195 +2,116 @@
 
 **The self-updating personal knowledge base.**
 
-Sensei automatically ingests, structures, and connects knowledge from your digital life — AI conversations, email, messages, notes, and the web — into a unified, AI-queryable knowledge graph backed by plain Markdown files. Self-hosted. Open source. Private by design.
+Sensei automatically ingests, structures, and connects knowledge from your AI conversations, email, messages, and note-taking apps into a unified, observable, AI-queryable knowledge graph — backed by plain Markdown files you own.
 
-[![Support](https://img.shields.io/badge/Support_Sensei-237352?style=for-the-badge)](https://paystack.shop/pay/gachichio)
+## Why Sensei?
 
----
+Your knowledge is fragmented across dozens of platforms. Claude conversations evaporate. ChatGPT chats are locked behind export buttons. Email threads hold decisions nobody can find. Notion pages sit unconnected. None of it talks to each other.
+
+**Sensei fixes this.** One knowledge base. All your sources. Always connected. Always yours.
 
 ## Features
 
-### 🧠 Knowledge Engine
-- **Automatic ingestion** — knowledge flows in from 14+ sources without manual entry
-- **AI-powered classification** — articles auto-categorised into topics, people, projects, decisions, insights, commitments, preferences
-- **Entity extraction** — people, projects, decisions, and commitments automatically identified and tracked
-- **Custom categories** — create your own categories beyond the defaults
-- **Full CRUD** — create, read, update, delete, and recategorise articles (files physically move between directories)
+### 🧠 Automatic Knowledge Ingestion
+- **14 data connectors** — AI conversations, email, messages, note-taking apps, RSS, webhooks
+- Content automatically classified, tagged, and linked — no manual organisation
+- Configurable sync intervals per connector (hourly / 4h / 12h / daily / custom time / manual)
+- Global sync defaults for all connectors
 
-### 🔗 Connections & Linking
-- **Wikilinks** — `[[double-bracket]]` syntax links articles together (Obsidian-compatible)
-- **Automatic backlinks** — every link creates a reverse reference
-- **Semantic connections** — AI discovers related articles by meaning, not just keywords
-- **Entity co-occurrence** — articles mentioning the same person/project are automatically linked
-- **Orphan detection** — unconnected articles are flagged for linking
-- **Knowledge graph visualisation** — interactive force-directed graph of all entities and connections
+### 🔗 Knowledge Graph & Linking
+- **Automatic backlinks** — every article knows what links to it
+- **6 link types** — explicit wikilinks, semantic similarity, entity co-occurrence, temporal, causal, suggested
+- **Entity extraction** — people, projects, decisions, commitments, locations auto-detected
+- **Orphan detection** — unlinked articles flagged for connection
+- Obsidian-compatible `[[wikilink]]` syntax
+- Interactive force-directed graph visualisation
 
-### 🔍 Search
-- **Full-text search** — SQLite FTS5 with Porter stemming
-- **Semantic search** — vector embeddings with cosine similarity ranking
-- **Hybrid search** — combines both for the best results
+### 🔍 Hybrid Search
+- Full-text search (SQLite FTS5 with porter stemming)
+- Semantic search (embeddings + cosine similarity via your chosen AI)
+- Results ranked by relevance with category filtering
 
-### 🤖 AI Integration (Multi-LLM with Failover)
+### 🤖 Multi-LLM with Automatic Failover
 - **7 providers** — OpenRouter, OpenAI, Anthropic, Gemini, Grok, Perplexity, Ollama
-- **Up to 3 active** — primary, secondary, tertiary with automatic failover
-- **No lock-in** — switch providers anytime; works without AI (full-text search only mode)
-
-### 📥 Connectors (14+)
-- **AI conversations** — Claude, ChatGPT, Gemini (ZIP import)
-- **Note-taking** — Obsidian (vault watcher), Notion (API), Google Docs, Google Keep, Apple Notes
-- **Communication** — Gmail, iMessage, WhatsApp, Telegram, Slack, RSS feeds
-- **Generic** — Webhook endpoint, media upload with OCR
-- **Configurable sync** — per-connector intervals (hourly / 4h / 12h / daily / custom time / manual) with global defaults
-
-### 🔗 Content Parser
-- **URL parsing** — share a tweet, article, or video link; Sensei extracts the core insight, key facts, and tags, and saves it as a knowledge article with the source backlinked
-- **Image analysis** — upload or share an image; AI describes it, OCR extracts text, knowledge is captured
-- **Document ingestion** — PDFs and text files processed and indexed
+- Configure up to **3 providers** (primary → secondary → tertiary)
+- If primary fails, Sensei automatically falls to the next
 
 ### 💬 Telegram Bot
-- **Chat with Sensei** — search, capture, parse links, receive briefings, analyse images — all from Telegram
-- **Commands** — `/search`, `/capture`, `/briefing`, `/stats`, `/ask`, `/help`
-- **Natural interaction** — send text (captured), links (parsed for insight), images (analysed), documents (ingested)
-- **Secure** — only responds to your configured Telegram user ID
+- Chat with Sensei from your phone — zero-friction mobile access
+- `/search` `/capture` `/briefing` `/stats` `/ask` commands
+- Send text → captured as knowledge. Send a URL → AI extracts insight. Send an image → AI analyses it.
+- Secured to your Telegram user ID only
 
-### 🧩 MCP Server
-- **7 tools** — `sensei_search`, `sensei_read`, `sensei_write`, `sensei_ingest`, `sensei_people`, `sensei_graph`, `sensei_stats`
-- **Connect any AI client** — Claude Desktop, Cursor, Claude Code, or any MCP-compatible tool
-- **JSON-RPC + SSE** — standard MCP protocol over HTTP
+### 🔮 Proactive Intelligence
+- Background engine discovers new connections every 30 minutes
+- **Content parser** — share a tweet, article, or video link; AI extracts the embedded knowledge
+- **Daily briefings** — summarises what's new and what needs attention
+- **Stale detection** — flags outdated high-importance knowledge
 
-### 🧭 Proactive Intelligence
-- **Background engine** — runs quietly every 30 minutes
-- **Connection discovery** — finds new semantic links between articles
-- **Stale knowledge detection** — flags high-importance articles that haven't been updated in 90+ days
-- **Orphan linking** — suggests connections for isolated articles
-- **Daily briefing** — AI-generated summary of what's new, what needs attention, and suggested next steps
+### 📡 MCP Server
+- 7 tools: `sensei_search`, `sensei_read`, `sensei_write`, `sensei_ingest`, `sensei_people`, `sensei_graph`, `sensei_stats`
+- Connect Claude Desktop, Cursor, or any MCP client
 
-### 🎨 UI & Experience
-- **7-step onboarding** — identity, appearance, AI providers, storage, first knowledge, domain/Telegram setup, connectors
-- **Dark / Light / Auto themes** — pill-style toggle with live system theme detection
-- **Font selection** — Inter, Georgia, JetBrains Mono, System — with live preview
-- **Font size** — S / M / L / XL visual selector
-- **Animations** — smooth transitions and effects, configurable on/off
-- **Mobile-first** — responsive layout, 44px touch targets, iOS zoom prevention, safe-area support
-- **Cross-browser** — Chrome, Safari, Firefox, Edge tested
-- **Tone & style** — configure how Sensei speaks (concise / conversational / professional / analytical / coaching / socratic) with custom instructions
+### 🎨 Beautiful UI
+- Responsive (mobile + desktop), dark / light / auto theme
+- 4 fonts, 4 sizes, configurable animations (on/off)
+- Tone & style settings (concise / conversational / professional / analytical / coaching / socratic)
+- All settings persist across sessions
 
-### ☁️ Storage & Sync
-- **Observable** — all knowledge stored as plain `.md` files with YAML frontmatter
-- **Cloud sync** — Backblaze B2, Google Drive, Dropbox, Box, S3/R2 (via rclone)
-- **Local sync** — filesystem path for cross-machine / mobile access
-- **Git-friendly** — version your knowledge with git
+### 📱 Connectors
+
+| Category | Connectors |
+|----------|-----------|
+| AI Conversations | Claude, ChatGPT, Gemini |
+| Note-Taking | Obsidian, Notion, Google Docs, Google Keep, Apple Notes |
+| Communication | Gmail, iMessage, WhatsApp, Telegram, Slack, RSS |
+| Storage | Backblaze B2, Google Drive, Dropbox, Box, S3/R2, local |
+| Generic | Webhook, media upload, URL parser |
 
 ### 🔒 Security
-- **Self-hosted** — your data never leaves your infrastructure
-- **No telemetry** — zero data phones home
-- **HTTPS** — automatic TLS via Caddy reverse proxy
-- **Security headers** — HSTS, X-Frame-Options, X-Content-Type-Options, X-XSS-Protection
-- **API keys server-side only** — never sent to frontend
-- **Telegram auth** — only your user ID can interact with your bot
-- **MCP auth** — bearer token support for remote access
-
----
+- Self-hosted — data never leaves your infrastructure
+- API keys server-side only. Security headers. TLS via Caddy. No telemetry.
 
 ## Quick Start
 
 ```bash
-git clone https://github.com/bgachichio/sensei.git
-cd sensei
+git clone https://github.com/bgachichio/Sensei.git
+cd Sensei
 npm install
 cd packages/web && npx vite build && cd ../..
 npm start
 ```
 
-Open `http://localhost:8082` and complete the onboarding wizard.
+Open `http://localhost:8082` and complete the 7-step onboarding.
 
-## Deployment
-
-### PM2 (recommended for VPS)
-
-```bash
-mkdir -p logs
-pm2 start ecosystem.config.cjs
-pm2 save
-```
-
-### With HTTPS (Caddy)
-
-```
-your-domain.com {
-    reverse_proxy localhost:8082
-}
-```
-
-```bash
-sudo systemctl reload caddy
-```
-
-### MCP Client Config
+## MCP Configuration
 
 ```json
 {
   "mcpServers": {
     "sensei": {
       "type": "http",
-      "url": "https://your-domain.com/mcp"
+      "url": "http://localhost:8082/mcp"
     }
   }
 }
 ```
 
-### Environment Variables
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `SENSEI_PORT` | `8082` | Server port |
-| `SENSEI_DATA_DIR` | `~/sensei-data` | Knowledge base directory |
-
-All other configuration (AI providers, storage, connectors, Telegram) is managed through the web UI.
-
 ## CLI
 
 ```bash
 node packages/cli/src/index.js search "kubernetes"
-node packages/cli/src/index.js add "Decided to use Caddy for reverse proxy"
-node packages/cli/src/index.js list projects
+node packages/cli/src/index.js add "Met with John, agreed to ship by Friday"
 node packages/cli/src/index.js stats
-```
-
-## Tech Stack
-
-| Layer | Technology |
-|-------|-----------|
-| Runtime | Node.js |
-| Server | Express.js |
-| Frontend | React + Vite + Tailwind CSS |
-| Database | SQLite (better-sqlite3) + FTS5 |
-| MCP | JSON-RPC over HTTP |
-| AI | 7 providers with failover |
-| Chat | Telegram Bot API |
-
-## Project Structure
-
-```
-sensei/
-├── packages/
-│   ├── core/           # Storage, search, graph, AI, ingestion, media, scheduler, proactive
-│   ├── server/         # Express API + MCP server + Telegram bot
-│   ├── web/            # React frontend
-│   ├── cli/            # Command-line interface
-│   └── connectors/     # AI, note-taking, comms, storage connectors
-├── tests/              # Integration + extended test suites (101 tests)
-├── ecosystem.config.cjs # PM2 config
-└── package.json
 ```
 
 ## Licence
 
-AGPLv3 — see [LICENCE](LICENCE)
+AGPL-3.0 — see [LICENCE](LICENCE)
 
 ## Author
 
-**Brian Gachichio** — [gachichio.org](https://gachichio.org) · [@b_gachichio](https://x.com/b_gachichio) · [GitHub](https://github.com/bgachichio/) · [LinkedIn](https://www.linkedin.com/in/briangachichio/)
+**Brian Gachichio Karanja** — [gachichio.org](https://gachichio.org) · [@b_gachichio](https://x.com/b_gachichio) · [GitHub](https://github.com/bgachichio/) · [LinkedIn](https://www.linkedin.com/in/briangachichio/)
 
 ---
 
