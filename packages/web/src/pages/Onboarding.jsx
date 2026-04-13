@@ -15,6 +15,47 @@ const AI_PROVIDERS = [
   { id: 'ollama', name: 'Ollama', desc: 'Local models (no API key needed)', hasEmbeddings: true, noKey: true }
 ];
 
+/** Mini connector card with real upload for onboarding */
+function OnboardingConnector({ connector, type }) {
+  const [status, setStatus] = React.useState(null); // null | 'uploading' | 'success' | 'error'
+  const [result, setResult] = React.useState('');
+
+  async function handleImport(file) {
+    setStatus('uploading');
+    try {
+      const res = await api.importConnector(connector.id, file);
+      setStatus('success');
+      setResult(`Imported ${res.imported} of ${res.total} items`);
+    } catch (e) {
+      setStatus('error');
+      setResult(e.message || 'Import failed');
+    }
+  }
+
+  return (
+    <div className="flex items-center gap-3 bg-gray-900 border border-gray-800 rounded-lg px-4 py-3 mb-1.5">
+      <span className="text-lg">{connector.icon}</span>
+      <div className="flex-1 min-w-0">
+        <div className="text-sm font-medium text-gray-200">{connector.name}</div>
+        <div className="text-xs text-gray-600 truncate">{connector.help}</div>
+      </div>
+      {status === 'success' ? (
+        <div className="text-xs text-green-400 flex items-center gap-1"><Check size={12} /> {result}</div>
+      ) : status === 'error' ? (
+        <div className="text-xs text-red-400">{result}</div>
+      ) : status === 'uploading' ? (
+        <div className="text-xs text-gray-400 animate-pulse">Importing...</div>
+      ) : (
+        <label className="shrink-0 flex items-center gap-1 bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1.5 rounded-lg text-xs cursor-pointer transition">
+          <Plus size={12} /> Import
+          <input type="file" accept=".zip,.txt,.json" className="hidden"
+            onChange={e => { if (e.target.files[0]) handleImport(e.target.files[0]); e.target.value = ''; }} />
+        </label>
+      )}
+    </div>
+  );
+}
+
 export default function Onboarding({ onComplete }) {
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -447,30 +488,42 @@ export default function Onboarding({ onComplete }) {
           </div>
         )}
 
-        {/* Step 7: Connect Sources */}
+        {/* Step 7: Connect Sources — FUNCTIONAL */}
         {step === 6 && (
-          <div className="space-y-6">
-            <div className="text-center mb-6">
+          <div className="space-y-5">
+            <div className="text-center mb-4">
               <Sparkles className="mx-auto mb-3 text-sensei-500" size={32} />
               <h2 className="text-xl font-bold mb-1">Connect your knowledge sources</h2>
-              <p className="text-gray-400 text-sm">You can always do this later from the Connectors page.</p>
+              <p className="text-gray-400 text-sm">Import your data now or configure later in Settings.</p>
             </div>
-            <div className="space-y-3">
-              <p className="text-xs text-gray-500 uppercase tracking-wide">AI Conversations</p>
-              {['Claude (import export ZIP)', 'ChatGPT (import export ZIP)', 'Gemini (Google Takeout)'].map(s => (
-                <div key={s} className="flex items-center gap-3 bg-gray-900 border border-gray-800 rounded-lg px-4 py-3 text-sm text-gray-400">
-                  <div className="w-2 h-2 rounded-full bg-gray-700" />
-                  {s}<span className="ml-auto text-xs text-gray-600">Set up later →</span>
-                </div>
-              ))}
-              <p className="text-xs text-gray-500 uppercase tracking-wide mt-4">Note-Taking & Communication</p>
-              {['Obsidian vault', 'Notion (API)', 'Google Docs', 'Apple Notes', 'Google Keep', 'Gmail', 'iMessage', 'WhatsApp', 'Telegram', 'Slack', 'RSS feeds'].map(s => (
-                <div key={s} className="flex items-center gap-3 bg-gray-900 border border-gray-800 rounded-lg px-4 py-3 text-sm text-gray-400">
-                  <div className="w-2 h-2 rounded-full bg-gray-700" />
-                  {s}<span className="ml-auto text-xs text-gray-600">Set up later →</span>
-                </div>
+
+            {/* AI Conversation Imports */}
+            <div>
+              <p className="text-xs text-gray-500 uppercase tracking-wide mb-2">AI Conversations (ZIP import)</p>
+              {[
+                { id: 'claude', name: 'Claude', icon: '🟠', help: 'claude.ai → Settings → Privacy → Export Data' },
+                { id: 'chatgpt', name: 'ChatGPT', icon: '🟢', help: 'chatgpt.com → Settings → Data controls → Export' },
+                { id: 'gemini', name: 'Gemini', icon: '🔵', help: 'takeout.google.com → Select Gemini Apps' }
+              ].map(c => (
+                <OnboardingConnector key={c.id} connector={c} type="import" />
               ))}
             </div>
+
+            {/* Note-taking imports */}
+            <div>
+              <p className="text-xs text-gray-500 uppercase tracking-wide mb-2">Note-Taking Apps</p>
+              {[
+                { id: 'google-keep', name: 'Google Keep', icon: '📝', help: 'takeout.google.com → Select Keep', type: 'import' },
+                { id: 'whatsapp', name: 'WhatsApp', icon: '💬', help: 'WhatsApp → Chat → Export Chat', type: 'import' },
+                { id: 'telegram', name: 'Telegram', icon: '✈️', help: 'Telegram Desktop → Export Data', type: 'import' }
+              ].map(c => (
+                <OnboardingConnector key={c.id} connector={c} type="import" />
+              ))}
+            </div>
+
+            <p className="text-xs text-gray-600 text-center mt-2">
+              More connectors (Obsidian, Notion, Gmail, Slack, RSS) can be configured in Settings → Connectors after onboarding.
+            </p>
           </div>
         )}
 

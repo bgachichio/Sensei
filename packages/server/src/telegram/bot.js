@@ -88,6 +88,31 @@ export class SenseiTelegramBot {
   restart() {
     this.stop();
     this.start();
+    // Send welcome message to confirm bot works
+    this.sendWelcome();
+  }
+
+  /**
+   * Send a welcome/confirmation message to the allowed user
+   */
+  async sendWelcome() {
+    if (!this.bot || !this.allowedUserId) return;
+    try {
+      const profile = this.db.getSetting('user_profile') || {};
+      const name = profile.preferredName || profile.fullName || 'there';
+      const stats = this.db.getStats();
+      await this.bot.sendMessage(this.allowedUserId,
+        `🥋 *Sensei is connected!*\n\n` +
+        `Welcome, ${name}. Your personal knowledge base is ready.\n\n` +
+        `📄 ${stats.articles} articles · 👤 ${stats.entities} entities · 🔗 ${stats.backlinks} connections\n\n` +
+        `Send me anything — text, links, images — and I'll capture the knowledge.\n` +
+        `Type /help for all commands.`,
+        { parse_mode: 'Markdown' }
+      );
+      console.log('[Telegram] Welcome message sent.');
+    } catch (e) {
+      console.warn('[Telegram] Could not send welcome message:', e.message);
+    }
   }
 
   /**

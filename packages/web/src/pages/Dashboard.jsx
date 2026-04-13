@@ -42,19 +42,27 @@ export default function Dashboard() {
 
   const [urlInput, setUrlInput] = useState('');
   const [parsingUrl, setParsingUrl] = useState(false);
+  const [parseResult, setParseResult] = useState(null);
 
   async function handleParseUrl(e) {
     e.preventDefault();
     if (!urlInput.trim()) return;
     setParsingUrl(true);
+    setParseResult(null);
     try {
-      await api.parseUrl(urlInput);
-      setUrlInput('');
-      loadData();
+      const result = await api.parseUrl(urlInput);
+      if (result.success) {
+        setParseResult({ success: true, title: result.article?.frontmatter?.title || result.parsed?.title || 'Parsed' });
+        setUrlInput('');
+        loadData();
+      } else {
+        setParseResult({ success: false, error: result.error || 'Parse failed' });
+      }
     } catch (e) {
-      console.error(e);
+      setParseResult({ success: false, error: e.message || 'AI provider not configured. Add an API key in Settings.' });
     }
     setParsingUrl(false);
+    setTimeout(() => setParseResult(null), 5000);
   }
 
   const categoryColors = {
@@ -91,7 +99,7 @@ export default function Dashboard() {
       {/* URL / Link Parser */}
       <form onSubmit={handleParseUrl} className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-3 sm:p-4">
         <div className="flex gap-2">
-          <input type="url" placeholder="Paste a link (tweet, article, video) to extract knowledge..."
+          <input type="text" placeholder="Paste a link (tweet, article, video) to extract knowledge..."
             value={urlInput} onChange={e => setUrlInput(e.target.value)}
             className="flex-1 bg-transparent focus:outline-none text-sm placeholder:text-gray-400 min-w-0" />
           <button type="submit" disabled={!urlInput.trim() || parsingUrl}
@@ -99,6 +107,11 @@ export default function Dashboard() {
             <LinkIcon size={12} /> {parsingUrl ? 'Parsing...' : 'Parse'}
           </button>
         </div>
+        {parseResult && (
+          <div className={`mt-2 flex items-center gap-2 text-xs px-3 py-2 rounded-lg ${parseResult.success ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}`}>
+            {parseResult.success ? `✅ ${parseResult.title}` : `❌ ${parseResult.error}`}
+          </div>
+        )}
       </form>
       </div>
 
