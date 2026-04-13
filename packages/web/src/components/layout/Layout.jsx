@@ -94,8 +94,7 @@ export default function Layout({ children, settings, theme, setTheme }) {
               className="w-full bg-gray-100 dark:bg-gray-900 border border-transparent focus:border-sensei-500 rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none transition" />
           </form>
 
-          <Link to="/" onClick={() => { setSearchQuery(''); setSearchResults(null); }}
-            className="flex items-center gap-1.5 bg-sensei-500 hover:bg-sensei-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition">
+          <Link to="/create" className="flex items-center gap-1.5 bg-sensei-500 hover:bg-sensei-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition">
             <PlusCircle size={14} /> New
           </Link>
         </header>

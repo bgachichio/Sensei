@@ -47,9 +47,67 @@ export default function ConnectorsPage() {
   const [expandedConnector, setExpandedConnector] = useState(null);
   const [savingConfig, setSavingConfig] = useState(null);
 
+  // AI Provider state
+  const [aiProviders, setAiProviders] = useState([]);
+  const [aiStatus, setAiStatus] = useState(null);
+  const [savingAI, setSavingAI] = useState(false);
+
+  const AI_PROVIDERS = [
+    { id: 'openrouter', name: 'OpenRouter', desc: 'All models (recommended)', hasKey: true },
+    { id: 'openai', name: 'OpenAI', desc: 'GPT-4o + embeddings', hasKey: true },
+    { id: 'anthropic', name: 'Anthropic', desc: 'Claude Sonnet/Opus', hasKey: true },
+    { id: 'gemini', name: 'Gemini', desc: 'Gemini Flash + embeddings', hasKey: true },
+    { id: 'grok', name: 'Grok', desc: 'xAI Grok models', hasKey: true },
+    { id: 'perplexity', name: 'Perplexity', desc: 'Sonar search-augmented', hasKey: true },
+    { id: 'ollama', name: 'Ollama', desc: 'Local (no API key)', hasKey: false }
+  ];
+
   useEffect(() => {
     loadConfigs();
+    loadAI();
   }, []);
+
+  async function loadAI() {
+    try {
+      const status = await api.getAIStatus();
+      setAiStatus(status);
+      if (status.providers?.length > 0) {
+        // Reconstruct providers from status
+        const settings = await api.getSettings();
+        const aiConfig = settings.settings?.ai_provider;
+        if (aiConfig?.providers) setAiProviders(aiConfig.providers);
+      }
+    } catch (e) { console.error(e); }
+  }
+
+  async function saveAIConfig() {
+    setSavingAI(true);
+    try {
+      const validProviders = aiProviders.filter(p => p.provider && (p.apiKey || !AI_PROVIDERS.find(a => a.id === p.provider)?.hasKey));
+      await api.configureAI({ providers: validProviders });
+      await loadAI();
+      setResults(prev => ({ ...prev, ai: { success: true, message: 'AI providers configured' } }));
+    } catch (e) {
+      setResults(prev => ({ ...prev, ai: { success: false, error: e.message } }));
+    }
+    setSavingAI(false);
+    setTimeout(() => setResults(prev => { const n = {...prev}; delete n.ai; return n; }), 4000);
+  }
+
+  function addAIProvider() {
+    if (aiProviders.length >= 3) return;
+    setAiProviders([...aiProviders, { provider: '', apiKey: '', priority: aiProviders.length }]);
+  }
+
+  function updateAIProvider(i, field, value) {
+    const u = [...aiProviders];
+    u[i] = { ...u[i], [field]: value };
+    setAiProviders(u);
+  }
+
+  function removeAIProvider(i) {
+    setAiProviders(aiProviders.filter((_, idx) => idx !== i).map((p, idx) => ({ ...p, priority: idx })));
+  }
 
   async function loadConfigs() {
     try {
@@ -134,6 +192,62 @@ export default function ConnectorsPage() {
         </div>
       </div>
 
+      {/* AI Providers — powers proactive intelligence, URL parsing, semantic search */}
+      <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-4 space-y-3">
+        <div>
+          <div className="text-sm font-medium flex items-center gap-1.5">🤖 AI Providers</div>
+          <div className="text-xs text-gray-500 mt-0.5">Powers proactive intelligence, URL parsing, semantic search, and entity extraction. Up to 3 with failover.</div>
+        </div>
+
+        {aiProviders.map((p, i) => (
+          <div key={i} className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3 space-y-2">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-medium text-sensei-400 w-16">{['Primary', 'Secondary', 'Tertiary'][i]}</span>
+              <div className="flex-1" />
+              <button onClick={() => removeAIProvider(i)} className="text-gray-500 hover:text-red-400 text-xs">✕ Remove</button>
+            </div>
+            <select value={p.provider} onChange={e => updateAIProvider(i, 'provider', e.target.value)}
+              className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm focus:border-sensei-500 focus:outline-none">
+              <option value="">Select provider...</option>
+              {AI_PROVIDERS.map(a => <option key={a.id} value={a.id}>{a.name} — {a.desc}</option>)}
+            </select>
+            {p.provider && AI_PROVIDERS.find(a => a.id === p.provider)?.hasKey && (
+              <input type="password" placeholder="API Key" value={p.apiKey || ''}
+                onChange={e => updateAIProvider(i, 'apiKey', e.target.value)}
+                className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm focus:border-sensei-500 focus:outline-none" />
+            )}
+            {p.provider && !AI_PROVIDERS.find(a => a.id === p.provider)?.hasKey && (
+              <div className="text-xs text-gray-500 px-1">No API key needed — ensure Ollama is running locally.</div>
+            )}
+          </div>
+        ))}
+
+        {aiProviders.length < 3 && (
+          <button onClick={addAIProvider}
+            className="w-full border border-dashed border-gray-300 dark:border-gray-700 rounded-lg py-2.5 text-xs text-gray-500 hover:text-sensei-400 hover:border-sensei-500/50 transition">
+            + Add {aiProviders.length === 0 ? 'primary' : aiProviders.length === 1 ? 'secondary' : 'tertiary'} provider
+          </button>
+        )}
+
+        {results.ai && (
+          <div className={`flex items-center gap-2 text-xs px-3 py-2 rounded-lg ${results.ai.success ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}`}>
+            {results.ai.success ? <CheckCircle size={12} /> : <AlertCircle size={12} />}
+            {results.ai.message || results.ai.error}
+          </div>
+        )}
+
+        <button onClick={saveAIConfig} disabled={savingAI || aiProviders.length === 0}
+          className="w-full bg-sensei-500 hover:bg-sensei-600 disabled:opacity-40 text-white py-2 rounded-lg text-xs font-medium transition">
+          {savingAI ? 'Saving...' : 'Save AI Configuration'}
+        </button>
+
+        {aiStatus && (
+          <div className="text-xs text-gray-500">
+            Status: {aiStatus.configured ? `${aiStatus.providers.length} provider(s) active` : 'Not configured'}
+          </div>
+        )}
+      </div>
+
       {/* Connectors by category */}
       {categories.map(category => (
         <div key={category}>
@@ -210,10 +324,22 @@ export default function ConnectorsPage() {
                         </select>
                       </div>
 
-                      <button onClick={() => saveConnectorConfig(conn.id)} disabled={savingConfig === conn.id}
-                        className="w-full flex items-center justify-center gap-1.5 bg-sensei-500 hover:bg-sensei-600 text-white py-2 rounded-lg text-xs font-medium transition">
-                        {savingConfig === conn.id ? 'Saving...' : <><SettingsIcon size={12} /> Save Configuration</>}
-                      </button>
+                      <div className="flex gap-2">
+                        <button onClick={() => saveConnectorConfig(conn.id)} disabled={savingConfig === conn.id}
+                          className="flex-1 flex items-center justify-center gap-1.5 bg-sensei-500 hover:bg-sensei-600 text-white py-2 rounded-lg text-xs font-medium transition">
+                          {savingConfig === conn.id ? 'Saving...' : <><SettingsIcon size={12} /> Save</>}
+                        </button>
+                        <button onClick={async () => {
+                          const updated = { ...configs };
+                          delete updated[conn.id];
+                          setConfigs(updated);
+                          await api.saveSettings({ connector_configs: updated });
+                          setResults(prev => ({ ...prev, [conn.id]: { success: true, message: 'Configuration deleted' } }));
+                        }}
+                          className="flex items-center justify-center gap-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 px-4 py-2 rounded-lg text-xs font-medium transition">
+                          Delete
+                        </button>
+                      </div>
                     </div>
                   )}
 

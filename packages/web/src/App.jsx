@@ -4,6 +4,7 @@ import { api } from './lib/api.js';
 import Onboarding from './pages/Onboarding.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import ArticleView from './pages/ArticleView.jsx';
+import CreateArticle from './pages/CreateArticle.jsx';
 import GraphView from './pages/GraphView.jsx';
 import ConnectorsPage from './pages/ConnectorsPage.jsx';
 import SettingsPage from './pages/SettingsPage.jsx';
@@ -91,6 +92,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/article/:id" element={<ArticleView />} />
+        <Route path="/create" element={<CreateArticle />} />
         <Route path="/graph" element={<GraphView />} />
         <Route path="/connectors" element={<ConnectorsPage />} />
         <Route path="/settings" element={<SettingsPage />} />
