@@ -97,8 +97,9 @@ export const api = {
   // About
   getAbout: () => request('/about'),
 
-  // AI Status
+  // AI Status + Configure
   getAIStatus: () => request('/ai/status'),
+  configureAI: (config) => request('/ai/configure', { method: 'POST', body: JSON.stringify(config) }),
 
   // Sync
   getSyncStatus: () => request('/sync/status'),

@@ -498,7 +498,7 @@ export function apiRoutes(services) {
     } catch (e) { res.status(500).json({ error: e.message }); }
   });
 
-  // ── AI Provider Status ──
+  // ── AI Provider Status + Configuration ──
 
   router.get('/ai/status', (req, res) => {
     try {
@@ -507,6 +507,36 @@ export function apiRoutes(services) {
         return res.json({ configured: false, providers: [] });
       }
       res.json({ configured: true, providers: aiProvider.getStatus() });
+    } catch (e) { res.status(500).json({ error: e.message }); }
+  });
+
+  router.post('/ai/configure', async (req, res) => {
+    try {
+      const aiConfig = req.body;
+      database.setSetting('ai_provider', aiConfig);
+
+      // Reinit ALL services that depend on AI
+      const { AIProvider: AIP, SearchEngine: SE } = await import('@sensei/core');
+      const newAi = new AIP(aiConfig);
+      services.aiProvider = newAi;
+
+      const newSearch = new SE(database, newAi);
+      services.searchEngine = newSearch;
+      services.pipeline.ai = newAi;
+      services.pipeline.search = newSearch;
+      if (services.mediaProcessor) services.mediaProcessor.ai = newAi;
+      if (services.proactiveEngine) {
+        services.proactiveEngine.ai = newAi;
+        services.proactiveEngine.search = newSearch;
+        // Restart proactive engine with new AI
+        services.proactiveEngine.stop();
+        services.proactiveEngine.start();
+      }
+      if (services.telegramBot) {
+        services.telegramBot.ai = newAi;
+      }
+
+      res.json({ success: true, providers: newAi.getStatus() });
     } catch (e) { res.status(500).json({ error: e.message }); }
   });
 

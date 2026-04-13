@@ -11,7 +11,7 @@ const SYNC_INTERVALS = [
 ];
 
 const ALL_CONNECTORS = [
-  // AI Conversations (import)
+  // AI Conversations (import + API key config)
   { id: 'claude', name: 'Claude', category: 'AI Conversations', icon: '🟠', type: 'import', accept: '.zip', help: 'Export: claude.ai → Settings → Privacy → Export Data → download ZIP' },
   { id: 'chatgpt', name: 'ChatGPT', category: 'AI Conversations', icon: '🟢', type: 'import', accept: '.zip', help: 'Export: chatgpt.com → Settings → Data controls → Export data → download ZIP' },
   { id: 'gemini', name: 'Gemini', category: 'AI Conversations', icon: '🔵', type: 'import', accept: '.zip', help: 'Export: takeout.google.com → Select "Gemini Apps" → download ZIP' },
@@ -28,6 +28,12 @@ const ALL_CONNECTORS = [
   { id: 'telegram-import', name: 'Telegram Export', category: 'Communication', icon: '✈️', type: 'import', accept: '.zip,.json', help: 'Telegram Desktop → Settings → Advanced → Export Telegram data' },
   { id: 'slack', name: 'Slack', category: 'Communication', icon: '💼', type: 'config', fields: [{ key: 'token', label: 'Bot User OAuth Token', placeholder: 'xoxb-...' }], help: 'Create a Slack app, add channels:history and channels:read scopes.' },
   { id: 'rss', name: 'RSS Feeds', category: 'Communication', icon: '📡', type: 'config', fields: [{ key: 'feeds', label: 'Feed URLs (one per line)', placeholder: 'https://news.ycombinator.com/rss\nhttps://example.com/feed', multiline: true }], help: 'Add RSS/Atom feed URLs. Sensei polls them on your sync schedule.' },
+  // Storage
+  { id: 'backblaze-b2', name: 'Backblaze B2', category: 'Storage', icon: '🔥', type: 'config', fields: [{ key: 'account', label: 'B2 Key ID', placeholder: '00xxxxx' }, { key: 'key', label: 'B2 Application Key', placeholder: '' }, { key: 'bucket', label: 'Bucket name', placeholder: 'sensei-kb' }], help: 'Syncs your knowledge base to Backblaze B2 via rclone.' },
+  { id: 'google-drive-storage', name: 'Google Drive', category: 'Storage', icon: '📁', type: 'config', fields: [{ key: 'client_id', label: 'Client ID', placeholder: '' }, { key: 'client_secret', label: 'Client Secret', placeholder: '' }, { key: 'folder_id', label: 'Folder ID', placeholder: '' }], help: 'Sync to Google Drive. Run `rclone config` on server for OAuth.' },
+  { id: 'dropbox-storage', name: 'Dropbox', category: 'Storage', icon: '📦', type: 'config', fields: [{ key: 'token', label: 'Access token', placeholder: '' }], help: 'Sync to Dropbox via rclone. Run `rclone config` for OAuth setup.' },
+  { id: 's3-storage', name: 'S3 / Cloudflare R2', category: 'Storage', icon: '☁️', type: 'config', fields: [{ key: 'access_key_id', label: 'Access Key ID', placeholder: '' }, { key: 'secret_access_key', label: 'Secret Access Key', placeholder: '' }, { key: 'endpoint', label: 'Endpoint URL', placeholder: 'https://xxx.r2.cloudflarestorage.com' }, { key: 'bucket', label: 'Bucket', placeholder: 'sensei-kb' }], help: 'Any S3-compatible storage including Cloudflare R2.' },
+  { id: 'local-storage', name: 'Local Sync Path', category: 'Storage', icon: '💾', type: 'config', fields: [{ key: 'path', label: 'Local sync path', placeholder: '/mnt/backup/sensei' }], help: 'Sync knowledge to another local directory (for backup or mobile access).' },
   // Generic
   { id: 'webhook', name: 'Webhook', category: 'Generic', icon: '🔗', type: 'info', help: 'POST JSON to /api/webhook/ingest to push content into Sensei from any source.' }
 ];
